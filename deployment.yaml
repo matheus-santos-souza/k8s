@@ -17,4 +17,18 @@ spec:
     spec:
       containers:
         - name: goserver
-          image: matheussantossouza/hello-go:v2
+          image: matheussantossouza/hello-go:v4
+          envFrom:
+            - configMapRef:
+                name: goserver-configmap
+          #env: 
+          #  - name: "NAME"
+          #    valueFrom:
+          #      configMapKeyRef:
+          #        name: goserver-configmap
+          #        key: "NAME"
+          #  - name: "AGE"
+          #    valueFrom:
+          #      configMapKeyRef:
+          #        name: goserver-configmap
+          #        key: "AGE"

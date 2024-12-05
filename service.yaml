@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: goserver-svc
+spec:
+  selector:
+    app: goserver
+  type: LoadBalancer #NodePort #ClusterIP
+  ports:
+  - name: goserver-svc
+    port: 80
+    targetPort: 3000
+    protocol: TCP
+    #nodePort: 30001
