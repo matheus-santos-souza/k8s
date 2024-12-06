@@ -8,7 +8,7 @@ spec:
   selector:
     matchLabels:
       app: goserver
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       name: goserver
@@ -17,10 +17,61 @@ spec:
     spec:
       containers:
         - name: goserver
-          image: matheussantossouza/hello-go:v4
+          image: matheussantossouza/hello-go:v8
+
+          # Realiza verificações iniciais para garantir que o container está pronto para uso.
+          # Função principal: realizar a primeira verificação e delegar as verificações futuras para readiness e liveness.
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            # initialDelaySeconds: 10 # Aguarda X segundos antes de iniciar as verificações.
+            periodSeconds: 3          # Realiza verificações a cada X segundos.
+            failureThreshold: 30      # Se falhar X vezes consecutivas, o container não inicia.
+            timeoutSeconds: 1         # Considera uma falha se a resposta demorar mais que X segundos.
+            successThreshold: 1       # Após X verificações bem-sucedidas, considera o container pronto.
+
+          # Verifica continuamente se o container está pronto para receber tráfego.
+          # Função principal: redirecionar tráfego apenas quando o container estiver pronto.
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            # initialDelaySeconds: 10 # Aguarda X segundos antes de iniciar as verificações.
+            periodSeconds: 3          # Realiza verificações a cada X segundos.
+            failureThreshold: 1       # Após X falhas consecutivas, o container será considerado indisponível.
+            timeoutSeconds: 1         # Considera uma falha se a resposta demorar mais que X segundos.
+            successThreshold: 1       # Após X verificações bem-sucedidas, considera o container disponível.
+
+          # Monitora continuamente a saúde do container e reinicia caso esteja em estado não saudável.
+          # Função principal: garantir que o container seja reiniciado em caso de falhas.
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            # initialDelaySeconds: 15 # Aguarda X segundos antes de iniciar as verificações.
+            periodSeconds: 5          # Realiza verificações a cada X segundos.
+            failureThreshold: 1       # Após X falhas consecutivas, o container será reiniciado.
+            timeoutSeconds: 1         # Considera uma falha se a resposta demorar mais que X segundos.
+            successThreshold: 1       # Após X verificações bem-sucedidas, considera o container saudável.
+
           envFrom:
             - configMapRef:
                 name: goserver-configmap
+            - secretRef:
+                name: goserver-secret
+          
+          volumeMounts:
+            - mountPath: "/go/myfamily"
+              name: config
+
+      volumes:
+        - name: config
+          configMap:
+            name: configmap-family
+            items:
+            - key: members
+              path: "family.txt"
           #env: 
           #  - name: "NAME"
           #    valueFrom:
