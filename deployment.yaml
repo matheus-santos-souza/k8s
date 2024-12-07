@@ -8,7 +8,7 @@ spec:
   selector:
     matchLabels:
       app: goserver
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       name: goserver
@@ -17,7 +17,17 @@ spec:
     spec:
       containers:
         - name: goserver
-          image: matheussantossouza/hello-go:v8
+          image: matheussantossouza/hello-go:v9
+
+          resources:
+            #Mínimo (sequestrando/reservando) para o POD.
+            requests:
+              cpu: 100m
+              memory: 20Mi
+            #Máximo para o POD
+            limits:
+              cpu: 500m
+              memory: 25Mi
 
           # Realiza verificações iniciais para garantir que o container está pronto para uso.
           # Função principal: realizar a primeira verificação e delegar as verificações futuras para readiness e liveness.
