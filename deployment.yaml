@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: goserver
-          image: matheussantossouza/hello-go:v9
+          image: matheussantossouza/hello-go:v10
 
           resources:
             #Mínimo (sequestrando/reservando) para o POD.
