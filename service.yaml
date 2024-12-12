@@ -5,7 +5,7 @@ metadata:
 spec:
   selector:
     app: goserver
-  type: LoadBalancer #NodePort #ClusterIP
+  type: ClusterIP #LoadBalancer #NodePort 
   ports:
   - name: goserver-svc
     port: 80
